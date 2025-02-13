@@ -40,24 +40,16 @@ router.route("/create").post(async (req, res) => {
 
 router.route("/lap:id").post(async (req, res) => {
   try {
-    const id = req.params.id;
-    const player = await user.findOne({ _id: id });
+    const player_Id = req.params.id;
+    const player = await user.findOne({ _id: player_Id });
 
     const player_Amount = Number(player.amount) + Number(player.lap_money);
-
-    user.findOneAndUpdate(
-      { _id: id },
-      { $set: { amount: player_Amount } },
-      { new: true },
-      (err, data) => {
-        if (err) {
-          console.log("Amount updation Failed");
-        }
-        res.status(200).json({ updated_lap_amount_details: data });
-      }
+    await user.findOneAndUpdate(
+      { _id: player_Id },
+      { amount: player_Amount },
+      { new: true }
     );
-
-    console.log(player_Amount);
+    res.status(200).json({ updated_lap_amount_details: player_Amount });
   } catch (error) {
     res.status(500).json({ error: error });
   }
@@ -95,7 +87,7 @@ router.route("/lap:id").post(async (req, res) => {
 
 // })
 
-router.route("/transfer/:id").post(async (req, res) => {
+router.route("/transfer:id").post(async (req, res) => {
   try {
     const id = req.params.id;
     const { player_id, amountSend } = req.body;
@@ -111,7 +103,7 @@ router.route("/transfer/:id").post(async (req, res) => {
 
     // if (id == receiverPlayer._id) {
     //   res.json({ message: "Cannot transfer to same id" });
-      
+
     // }
 
     if (senderPlayer.amount < amountSend) {
@@ -123,20 +115,18 @@ router.route("/transfer/:id").post(async (req, res) => {
         .status(404)
         .json({ message: "Receiver or sender player not found." });
     }
-    const recieveAmount=receiverPlayer.amount + parseFloat(amountSend)
-    const sendersAmount= senderPlayer.amount - parseFloat(amountSend)
+    const recieveAmount = receiverPlayer.amount + parseFloat(amountSend);
+    const sendersAmount = senderPlayer.amount - parseFloat(amountSend);
 
-    
     await user.findOneAndUpdate(
-      { _id:id },
-
-      { amount: recieveAmount},
+      { _id: id },
+      { amount: recieveAmount },
       { new: true }
     );
-     await user.findOneAndUpdate(
-      { _id:player_id },
+    await user.findOneAndUpdate(
+      { _id: player_id },
 
-      { amount:sendersAmount },
+      { amount: sendersAmount },
       { new: true }
     );
   } catch (error) {
@@ -178,29 +168,18 @@ router.route("/properties_Buying:id").post(async (req, res) => {
     //     return  e.toString() === property.toString().toUpperCase()
     // })
 
-    console.log("Name added");
     const updated_Properties = [
       ...current_Player.properties,
       property.toUpperCase(),
     ];
 
-    await user
-      .findOneAndUpdate(
-        { _id: id },
-        { $set: { properties: updated_Properties } },
-        { new: true },
-        (err, data) => {
-          if (err) {
-            throw err;
-          }
+    await user.findOneAndUpdate(
+      { _id: id },
+      { properties: updated_Properties },
+      { new: true }
+    );
+    res.status(200).json({ updated_properties_details: updated_Properties });
 
-          res.status(200).json({ updated_properties_details: data });
-        }
-      )
-      .clone()
-      .catch((err) => {
-        console.log(err);
-      });
     console.log(updated_Properties);
   } catch (error) {
     console.error("Error adding property:", error);
@@ -216,23 +195,19 @@ router.route("/pay_Bank:id").post(async (req, res) => {
 
   const current_player = await user.findOne({ _id: player_id });
 
-  if (current_player.amount < Number(pay_Bank)) {
+  if (current_player.amount < parseFloat(pay_Bank)) {
     res.json({ message: "not enough balance" });
   }
-  const player_Updated_Amount = current_player.amount - Number(pay_Bank);
+  const player_Updated_Amount = current_player.amount - parseFloat(pay_Bank);
 
-  user.findOneAndUpdate(
+  await user.findOneAndUpdate(
     { _id: player_id },
-    { $set: { amount: player_Updated_Amount } },
-    { new: true },
-    (err, data) => {
-      if (err) {
-        console.log(" Amount updation Failed");
-      }
 
-      res.status(200).json({ updated_player_amount: data });
-    }
+    { amount: player_Updated_Amount },
+    { new: true }
   );
+
+  res.status(200).json({ updated_player_amount: player_Updated_Amount });
 });
 
 //Adding amount by bank
