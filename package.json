@@ -1,9 +1,0 @@
-{
-  "dependencies": {
-    "mongodb": "^6.13.0"
-  },
-  "scripts": {
-    "start": "node index.js",
-    "test": "echo \"Error : no test specfied\" && exit 1"
-  }
-}
