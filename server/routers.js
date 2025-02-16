@@ -162,16 +162,7 @@ router.route("/properties_Buying:id").post(async (req, res) => {
 
     const current_Player = await user.findOne({ _id: id });
 
-    // const copyCurrentPlayer=[...current_Player.properties]
-
-    // const checkingPropertyExistance=current_Player.properties.filter((e)=>{
-    //     return  e.toString() === property.toString().toUpperCase()
-    // })
-
-    const updated_Properties = [
-      ...current_Player.properties,
-      property.toUpperCase(),
-    ];
+    const updated_Properties = [...current_Player.properties, property];
 
     await user.findOneAndUpdate(
       { _id: id },
@@ -186,7 +177,18 @@ router.route("/properties_Buying:id").post(async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
 });
-
+//get user Property
+router.route("/getUser_property:id").get(async (req, res) => {
+  const player_id = req.params.id;
+  if (!player_id) {
+    console.error("user not exist");
+  }
+  const current_player = await user.findOne({ _id: player_id });
+  if (current_player.properties == null) {
+    res.json({ message: "no property owned" });
+  }
+  res.json({ property: current_player.properties });
+});
 //Pay to Bank
 
 router.route("/pay_Bank:id").post(async (req, res) => {

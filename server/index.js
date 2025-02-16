@@ -21,7 +21,7 @@ const connectDB = async () => {
 };
 connectDB();
 
-// moongose.connect('mongodb://127.0.0.1:27017/bank')
+// mongoose.connect('mongodb://127.0.0.1:27017/bank')
 
 app.listen(process.env.PORT, () => {
   console.log("server is running ");
