@@ -146,8 +146,24 @@ router.route("/players_details:game_id").post(async (req, res) => {
     }
 
     const Players_details = await user.find({ game_id: Game_Id });
-
+    console.log(Players_details)
     res.status(200).json({ players: Players_details });
+  } catch (error) {
+    res.status(400).json({ err: error });
+  }
+});
+// Number of Players
+router.route("/players_count:game_id").post(async (req, res) => {
+  try {
+    const Game_Id = req.params.game_id;
+
+    if (!Game_Id) {
+      res.status(400).json({ message: "Game ID not available" });
+    }
+
+    const Players_details = await user.find({ game_id: Game_Id });
+
+    res.status(200).json({ players_count: Players_details.length });
   } catch (error) {
     res.status(400).json({ err: error });
   }
