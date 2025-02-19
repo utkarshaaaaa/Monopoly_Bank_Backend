@@ -146,7 +146,7 @@ router.route("/players_details:game_id").post(async (req, res) => {
     }
 
     const Players_details = await user.find({ game_id: Game_Id });
-    console.log(Players_details)
+    console.log(Players_details);
     res.status(200).json({ players: Players_details });
   } catch (error) {
     res.status(400).json({ err: error });
@@ -204,6 +204,20 @@ router.route("/getUser_property:id").get(async (req, res) => {
     res.json({ message: "no property owned" });
   }
   res.json({ property: current_player.properties });
+});
+//get updated player amount
+router.route("/getUser_amount:id").get(async (req, res) => {
+  const player_id = req.params.id;
+  if (!player_id) {
+    console.error("user not exist");
+  }
+  const current_player = await user.findOne({ _id: player_id });
+
+  if(!current_player){
+    res.sendStatus(500).json({"message":"User does not exist"})
+  }
+
+  res.json({ amount: current_player.amount });
 });
 //Pay to Bank
 
