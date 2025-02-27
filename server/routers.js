@@ -213,8 +213,8 @@ router.route("/getUser_amount:id").get(async (req, res) => {
   }
   const current_player = await user.findOne({ _id: player_id });
 
-  if(!current_player){
-    res.sendStatus(500).json({"message":"User does not exist"})
+  if (!current_player) {
+    res.sendStatus(500).json({ message: "User does not exist" });
   }
 
   res.json({ amount: current_player.amount });
@@ -286,6 +286,31 @@ router.route("/player_info:id").get(async (req, res) => {
   } catch (error) {
     console.log(error);
   }
+});
+//remove Property
+
+router.route("/remove_property:id").post(async (req, res) => {
+  const { propertyName } = req.body;
+
+  if(!propertyName){
+    res.json({message:"property Name Required"})
+  }
+  const PlayerInfo = await user.findOne({ _id: id });
+  const userProperty = PlayerInfo.properties;
+  if (userProperty.length == 0) {
+    res.status(500).json({ message: "Owns no property" });
+
+  }
+  const updatedProperty = userProperty.filter(
+    (obj) => obj["propertyName"] !== propertyName
+  );
+  await user.findOneAndUpdate(
+    { _id: PlayerInfo },
+    { properties: updatedProperty },
+    { new: true }
+  );
+
+  res.status(200).json({updatedProperty:updatedProperty})
 });
 
 //get players data by game_id
