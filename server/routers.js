@@ -158,14 +158,14 @@ router.route("/players_count:game_id").post(async (req, res) => {
     const Game_Id = req.params.game_id;
 
     if (!Game_Id) {
-      res.status(400).json({ message: "Game ID not available" });
+      return res.status(400).json({ message: "Game ID not available" });
     }
 
-    const Players_details = await user.find({ game_id: Game_Id });
+    const Players_details = await user.countDocuments({ game_id: Game_Id });
 
     res.status(200).json({ players_count: Players_details.length });
   } catch (error) {
-    res.status(400).json({ err: error });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
@@ -292,14 +292,13 @@ router.route("/player_info:id").get(async (req, res) => {
 router.route("/remove_property:id").post(async (req, res) => {
   const { propertyName } = req.body;
 
-  if(!propertyName){
-    res.json({message:"property Name Required"})
+  if (!propertyName) {
+    res.json({ message: "property Name Required" });
   }
   const PlayerInfo = await user.findOne({ _id: id });
   const userProperty = PlayerInfo.properties;
   if (userProperty.length == 0) {
     res.status(500).json({ message: "Owns no property" });
-
   }
   const updatedProperty = userProperty.filter(
     (obj) => obj["propertyName"] !== propertyName
@@ -310,7 +309,7 @@ router.route("/remove_property:id").post(async (req, res) => {
     { new: true }
   );
 
-  res.status(200).json({updatedProperty:updatedProperty})
+  res.status(200).json({ updatedProperty: updatedProperty });
 });
 
 //get players data by game_id
