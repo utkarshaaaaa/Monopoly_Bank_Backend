@@ -29,6 +29,7 @@ const userschema = new mongoose.Schema({
   game_id: {
     type: String,
     require: true,
+    index: true,
   },
   lap_money: {
     type: Number,
